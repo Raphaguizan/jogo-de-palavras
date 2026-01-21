@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogo de Palavras</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    text-align: center;
+}
+
+.screen {
+    display: none;
+    padding: 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    margin-top: 40px;
+}
+
+button, select {
+    width: 90%;
+    padding: 15px;
+    margin: 10px auto;
+    font-size: 18px;
+    border-radius: 10px;
+    border: none;
+}
+
+button {
+    background: #00d26a;
+    color: #000;
+    font-weight: bold;
+}
+
+.back {
+    background: #555;
+    color: #fff;
+}
+
+.words {
+    text-align: left;
+    font-size: 22px;
+    margin: 20px auto 30px;
+    width: 90%;
+    margin-left: 30%;
+}
+
+.hidden {
+    filter: blur(15px);
+}
+
+/* DROPDOWN */
+.dropdown {
+    margin-top: auto;
+    width: 100%;
+}
+
+.dropdown-btn {
+    background: #222;
+    color: #fff;
+    width: 100%;
+    border-radius: 0;
+    font-size: 16px;
+}
+
+.dropdown-content {
+    display: none;
+    background: #1a1a1a;
+    padding: 10px 0;
+}
+
+.dropdown.open .dropdown-content {
+    display: block;
+}
+
+.category {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.category input {
+    transform: scale(1.3);
+}
+
+.count {
+    opacity: 0.6;
+}
+
+.total {
+    padding: 12px 20px;
+    font-size: 14px;
+    opacity: 0.75;
+    border-top: 1px solid #333;
+    text-align: right;
+}
+
+/* OVERLAY TIMER */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+.overlay-timer {
+    font-size: 96px;
+    margin-bottom: 120px;
+}
+
+.overlay-timer.red {
+    color: red;
+}
+
+.overlay-buttons button {
+    width: 200px;
+    margin: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- MENU -->
+<div class="screen active" id="menu">
+    <h1>🎲 Jogo de Palavras</h1>
+
+    <button onclick="go('game1')">📝 Sortear Palavras</button>
+    <button onclick="go('game2')">⏱️ Palavra + Timer</button>
+
+    <!-- DROPDOWN -->
+    <div class="dropdown" id="catDropdown">
+        <button class="dropdown-btn" onclick="toggleDropdown()">📂 Categorias ▾</button>
+        <div class="dropdown-content" id="categoriasBox"></div>
+    </div>
+</div>
+
+<!-- JOGO 1 -->
+<div class="screen" id="game1">
+    <h2>Sortear Palavras</h2>
+
+    <select id="qtd">
+        <option>1</option><option>2</option><option>3</option>
+        <option>4</option><option selected>5</option>
+        <option>6</option><option>7</option><option>8</option>
+        <option>9</option><option>10</option>
+    </select>
+
+    <button onclick="sortearLista()">🎲 Sortear</button>
+    <div class="words" id="lista"></div>
+
+    <button class="back" onclick="go('menu')">⬅ Voltar</button>
+</div>
+
+<!-- JOGO 2 -->
+<div class="screen" id="game2">
+    <h2>Palavra Secreta</h2>
+
+    <button onclick="sortearPalavra()">🎯 Sortear Palavra</button>
+    <div id="palavra" style="font-size:40px;margin:20px;"></div>
+    <button onclick="toggleHide()">🙈 Esconder / Mostrar</button>
+
+    <select id="tempo">
+        <option value="5">5s</option>
+        <option value="10" selected>10s</option>
+        <option value="20">20s</option>
+        <option value="30">30s</option>
+        <option value="60">60s</option>
+    </select>
+
+    <button onclick="startTimer()">▶ Começar</button>
+    <button class="back" onclick="go('menu')">⬅ Voltar</button>
+</div>
+
+<!-- OVERLAY TIMER -->
+<div class="overlay" id="timerOverlay">
+    <div>
+        <div class="overlay-timer" id="overlayTimer">0</div>
+        <div class="overlay-buttons">
+            <button onclick="stopTimer()">⏹ Parar</button>
+            <button onclick="pauseTimer()">⏸ Pausar</button>
+        </div>
+    </div>
+</div>
+
+<!-- SONS -->
+<audio id="startSound" src="starting_gun.wav"></audio>
+<audio id="beep" src="beep.wav"></audio>
+<audio id="alarm" src="alarm.wav"></audio>
+
+<script>
+let palavras = [];
+let palavrasPorCategoria = {};
+let hideTimer = null;
+let closerTimer = null;
+let timerInt, prepInt;
+let timeLeft = 0;
+let paused = false;
+let escondida = false;
+
+const STORAGE_KEY = "categoriasSelecionadas";
+
+const categorias = {
+    Objetos: "palavras_objetos.txt",
+    Abstratos: "palavras_abstratos.txt",
+    Ações: "palavras_verbos.txt",
+    CEP: "palavras_CEP.txt",
+    Filmes: "palavras_filmes.txt",
+    Famosos: "palavras_famosos.txt",
+    Bandas: "palavras_bandas.txt",
+    Adulto: "palavras_adulto.txt"
+};
+
+/* CARREGAR CATEGORIAS */
+async function carregarCategorias(){
+    const box = document.getElementById("categoriasBox");
+    box.innerHTML = "";
+
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    let index = 0;
+
+    for (const [nome, arquivo] of Object.entries(categorias)) {
+        const txt = await fetch(arquivo).then(r => r.text());
+        const lista = txt.split("\n").filter(Boolean);
+        palavrasPorCategoria[nome] = lista;
+
+        const checked = saved ? saved.includes(nome) : index < 2;
+
+        const div = document.createElement("div");
+        div.className = "category";
+        div.innerHTML = `
+            <label>
+                <input type="checkbox" value="${nome}" ${checked ? "checked" : ""}>
+                ${nome.toUpperCase()}
+            </label>
+            <span class="count">${lista.length}</span>
+        `;
+
+        div.querySelector("input").addEventListener("change", salvarCategorias);
+        box.appendChild(div);
+        index++;
+    }
+
+    const totalDiv = document.createElement("div");
+    totalDiv.className = "total";
+    totalDiv.id = "totalPalavras";
+    box.appendChild(totalDiv);
+
+    atualizarPalavras();
+}
+
+/* SALVAR */
+function salvarCategorias(){
+    const selecionadas = [...document.querySelectorAll("#categoriasBox input:checked")]
+        .map(c => c.value);
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(selecionadas));
+    atualizarPalavras();
+}
+
+/* ATUALIZAR PALAVRAS */
+function atualizarPalavras(){
+    palavras = [];
+    document.querySelectorAll("#categoriasBox input:checked").forEach(c =>
+        palavras.push(...palavrasPorCategoria[c.value])
+    );
+    palavras = [...new Set(palavras)];
+
+    document.getElementById("totalPalavras").textContent =
+        `Total selecionado: ${palavras.length} palavras`;
+}
+
+/* UI */
+function toggleDropdown(){
+    document.getElementById("catDropdown").classList.toggle("open");
+}
+
+function go(id){
+    atualizarPalavras();
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+/* JOGO 1 */
+function sortearLista(){
+    const qtd = +document.getElementById("qtd").value;
+    document.getElementById("lista").innerHTML =
+        palavras.sort(()=>0.5-Math.random()).slice(0,qtd)
+        .map((p,i)=>`${i+1}. ${p}`).join("<br>");
+}
+
+/* JOGO 2 */
+function sortearPalavra(){
+    document.getElementById("palavra").textContent =
+        palavras[Math.floor(Math.random()*palavras.length)];
+    toggleHide(false);
+    hideTimer = setInterval(()=>{
+        toggleHide(true);
+    }, 3000);
+}
+
+function toggleHide(v=null){
+    clearInterval(hideTimer);
+    hideTimer = null;
+    escondida = v!==null ? v : !escondida;
+    document.getElementById("palavra").classList.toggle("hidden", escondida);
+}
+
+/* TIMER */
+function startTimer(){
+    clearInterval(closerTimer);
+    closerTimer = null;
+    stopTimer();
+    toggleHide(true);
+
+    const total = +document.getElementById("tempo").value;
+    const display = document.getElementById("overlayTimer");
+    document.getElementById("timerOverlay").classList.add("active");
+
+    let prep = 3;
+    display.textContent = "EM\n" + prep;
+
+    prepInt = setInterval(()=>{
+        prep--;
+        if(prep>0){
+            display.textContent = "EM\n" + prep;
+        } else {
+            clearInterval(prepInt);
+            document.getElementById("startSound").play();
+            timeLeft = total;
+            display.textContent = timeLeft;
+            timerInt = setInterval(runTimer,1000);
+        }
+    },1000);
+}
+
+function runTimer(){
+    if(paused) return;
+    const d = document.getElementById("overlayTimer");
+    timeLeft--;
+    d.textContent = timeLeft;
+
+    if(timeLeft<=3 && timeLeft > 0){
+        d.classList.add("red");
+        document.getElementById("beep").play();
+    }
+    if(timeLeft<=0){
+        clearInterval(timerInt);
+        d.textContent = "⏰";
+        document.getElementById("alarm").play();
+        navigator.vibrate?.([300,100,300]);
+        closerTimer = setTimeout(() => {
+            stopTimer();
+        }, 5000);
+    }
+}
+
+function pauseTimer(){ paused = !paused; }
+
+function stopTimer(){
+    clearInterval(timerInt);
+    clearInterval(prepInt);
+    paused=false;
+    document.getElementById("timerOverlay").classList.remove("active");
+}
+
+/* INIT */
+carregarCategorias();
+
+if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>

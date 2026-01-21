@@ -1,0 +1,359 @@
+Acre
+Afeganistão
+África do Sul
+Alagoas
+Albânia
+Alemanha
+Amsterdã (Holanda)
+Amapá
+Amazonas
+Anápolis (GO)
+Andorra
+Angola
+Angra dos Reis (RJ)
+Antígua e Barbuda
+Aparecida (SP)
+Arábia Saudita
+Aracaju (SE)
+Arapiraca (AL)
+Argélia
+Argentina
+Armênia
+Arraial do Cabo (RJ)
+Atenas (Grécia)
+Austrália
+Áustria
+Azerbaijão
+Bahamas
+Bahia
+Bahrein
+Balneário Camboriú (SC)
+Bangkok (Tailândia)
+Bangladesh
+Barbados
+Barcelona (Espanha)
+Barretos (SP)
+Bauru (SP)
+Bélgica
+Belém (PA)
+Belize
+Belo Horizonte (MG)
+Benim
+Berlim (Alemanha)
+Bielorrússia
+Blumenau (SC)
+Boa Vista (RR)
+Bolívia
+Bonito (MS)
+Bósnia e Herzegovina
+Botsuana
+Brasil
+Brasília (DF)
+Brunei
+Bruxelas (Bélgica)
+Buenos Aires (Argentina)
+Bulgária
+Burkina Faso
+Burundi
+Búzios (RJ)
+Cabo Frio (RJ)
+Cabo Verde
+Cairo (Egito)
+Caldas Novas (GO)
+Camarões
+Camboja
+Campina Grande (PB)
+Campinas (SP)
+Campo Grande (MS)
+Campos dos Goytacazes (RJ)
+Canadá
+Canoas (RS)
+Canela (RS)
+Caruaru (PE)
+Casablanca (Marrocos)
+Cascavel (PR)
+Catar
+Caxias do Sul (RS)
+Cazaquistão
+Ceará
+Chade
+Chicago (EUA)
+Chile
+China
+Chipre
+Cidade do Cabo (África do Sul)
+Cidade do México (México)
+Colômbia
+Comores
+Congo
+Coreia do Norte
+Coreia do Sul
+Costa do Marfim
+Costa Rica
+Croácia
+Cuba
+Cuiabá (MT)
+Curitiba (PR)
+Deadpool
+Dinamarca
+Djibouti
+Dominica
+Dourados (MS)
+Dubai (Emirados Árabes)
+Dublin (Irlanda)
+Duque de Caxias (RJ)
+Egito
+El Salvador
+Emirados Árabes Unidos
+Equador
+Eritreia
+Eslováquia
+Eslovênia
+Espanha
+Espírito Santo
+Estados Unidos
+Estônia
+Etiópia
+Feira de Santana (BA)
+Fiji
+Filipinas
+Finlândia
+Florianópolis (SC)
+Fortaleza (CE)
+França
+Gabão
+Gâmbia
+Gana
+Geórgia
+Goiânia (GO)
+Goiás
+Governador Valadares (MG)
+Gramado (RS)
+Granada
+Grécia
+Guarulhos (SP)
+Guatemala
+Guiana
+Guiné
+Guiné Equatorial
+Guiné-Bissau
+Haiti
+Holanda
+Honduras
+Hong Kong (China)
+Hungria
+Iêmen
+Ilhas Marshall
+Ilhas Salomão
+Ilhéus (BA)
+Imperatriz (MA)
+Índia
+Indonésia
+Inglaterra
+Iraque
+Irã
+Irlanda
+Islândia
+Israel
+Istambul (Turquia)
+Itália
+Jaboatão dos Guararapes (PE)
+Jacarta (Indonésia)
+Jamaica
+Japão
+Jericoacoara (CE)
+Jerusalém (Israel)
+João Pessoa (PB)
+Joinville (SC)
+Jordânia
+Juazeiro do Norte (CE)
+Juiz de Fora (MG)
+Jundiaí (SP)
+Kiribati
+Kuwait
+Laos
+Las Vegas (EUA)
+Lesoto
+Letônia
+Líbano
+Libéria
+Líbia
+Liechtenstein
+Limeira (SP)
+Lisboa (Portugal)
+Lituânia
+Londres (Inglaterra)
+Londrina (PR)
+Los Angeles (EUA)
+Luxemburgo
+Macaé (RJ)
+Macapá (AP)
+Macedônia do Norte
+Madagascar
+Madri (Espanha)
+Malásia
+Malawi
+Maldivas
+Mali
+Malta
+Manaus (AM)
+Manila (Filipinas)
+Maranhão
+Maricá (RJ)
+Maringá (PR)
+Marrocos
+Mato Grosso
+Mato Grosso do Sul
+Maurício
+Mauritânia
+México
+Mianmar
+Miami (EUA)
+Micronésia
+Milão (Itália)
+Minas Gerais
+Moçambique
+Moldávia
+Mônaco
+Mongólia
+Montenegro
+Montes Claros (MG)
+Moscou (Rússia)
+Mossoró (RN)
+Mumbai (Índia)
+Namíbia
+Natal (RN)
+Nauru
+Nepal
+Nicarágua
+Níger
+Nigéria
+Niterói (RJ)
+Nova Friburgo (RJ)
+Nova York (EUA)
+Nova Zelândia
+Novo Hamburgo (RS)
+Olinda (PE)
+Omã
+Osasco (SP)
+Ouro Preto (MG)
+Palau
+Panamá
+Papua-Nova Guiné
+Paquistão
+Pará
+Paraguai
+Paraíba
+Paraná
+Paraty (RJ)
+Paris (França)
+Pelotas (RS)
+Pequim (China)
+Pernambuco
+Peru
+Petrolina (PE)
+Petrópolis (RJ)
+Piauí
+Pipa (RN)
+Piracicaba (SP)
+Polônia
+Ponta Grossa (PR)
+Porto Alegre (RS)
+Porto de Galinhas (PE)
+Porto Velho (RO)
+Portugal
+Praga (República Tcheca)
+Praia Grande (SP)
+Quênia
+Quirguistão
+Recife (PE)
+Reino Unido
+República Centro-Africana
+República Checa
+República Dominicana
+Resende (RJ)
+Ribeirão Preto (SP)
+Rio Branco (AC)
+Rio de Janeiro (RJ)
+Rio Grande do Norte
+Rio Grande do Sul
+Rio Verde (GO)
+Roma (Itália)
+Rondônia
+Roraima
+Romênia
+Ruanda
+Rússia
+Salvador (BA)
+Samoa
+San Marino
+Santa Catarina
+Santa Lúcia
+Santa Maria (RS)
+Santarém (PA)
+Santiago (Chile)
+Santo André (SP)
+Santos (SP)
+São Bernardo do Campo (SP)
+São Cristóvão e Névis
+São José do Rio Preto (SP)
+São José dos Campos (SP)
+São Luís (MA)
+São Paulo (SP)
+São Tomé e Príncipe
+São Vicente e Granadinas
+Saquarema (RJ)
+Seicheles
+Senegal
+Sergipe
+Serra (ES)
+Serra Leoa
+Sérvia
+Seul (Coreia do Sul)
+Singapura
+Síria
+Sobral (CE)
+Somália
+Sorocaba (SP)
+Sri Lanka
+Sudão
+Sudão do Sul
+Suécia
+Suíça
+Suriname
+Sydney (Austrália)
+Tailândia
+Taipei
+Tajiquistão
+Tanzânia
+Taubaté (SP)
+Teresina (PI)
+Teresópolis (RJ)
+Timor-Leste
+Tiradentes (MG)
+Togo
+Tonga
+Tóquio (Japão)
+Toronto (Canadá)
+Trinidad e Tobago
+Tunísia
+Turcomenistão
+Turquia
+Tuvalu
+Ucrânia
+Uganda
+Uruguai
+Uzbequistão
+Vanuatu
+Vaticano
+Veneza (Itália)
+Venezuela
+Viena (Áustria)
+Vietnã
+Vila Velha (ES)
+Vitória (ES)
+Vitória da Conquista (BA)
+Washington D.C. (EUA)
+Zâmbia
+Zimbábue
+Zurique (Suíça)
