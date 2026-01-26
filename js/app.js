@@ -173,5 +173,6 @@ Object.assign(window, {
     toggleHide,
     startTimer,
     pauseTimer,
-    stopTimer
+    stopTimer,
+    palavras
 });

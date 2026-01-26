@@ -2,6 +2,7 @@
 import { db } from "./firebase.js";
 import {
     ref,
+    remove,
     set,
     get,
     onValue,
@@ -178,6 +179,70 @@ function toggleMensagem() {
     box.classList.toggle("hidden", !revealed);
 }
 
+function sairSala() {
+    if (!roomCode) {
+        go("menu");
+        return;
+    }
+
+    const roomRef = ref(db, `rooms/${roomCode}`);
+    const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
+
+    if (isHost) {
+        // HOST destrói a sala inteira
+        remove(roomRef);
+        alert("Sala encerrada pelo host");
+    } else {
+        // Jogador apenas sai da sala
+        remove(playerRef);
+    }
+
+    // Reset estado local
+    roomCode = "";
+    isHost = false;
+    revealed = false;
+
+    // Volta para o lobby do impostor
+    go("impostor-lobby");
+}
+
+function escutarSala() {
+    const roomRef = ref(db, `rooms/${roomCode}`);
+
+    onValue(roomRef, snapshot => {
+
+        if (!snapshot.exists()) {
+            alert("A sala foi encerrada");
+            roomCode = "";
+            isHost = false;
+            go("impostor-lobby");
+            return;
+        }
+
+        const data = snapshot.val();
+
+        atualizarListaJogadores(data.players);
+
+        if (data.started) {
+            const meuEstado = data.players[playerId];
+            if (!meuEstado) return;
+
+            if (meuEstado.impostor) {
+                mostrarMensagem("🚨 VOCÊ É O IMPOSTOR");
+            } else {
+                mostrarMensagem("🎨 PALAVRA: " + data.palavra);
+            }
+        }
+    });
+}
+window.addEventListener("beforeunload", () => {
+    if (roomCode && !isHost) {
+        const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
+        remove(playerRef);
+    }
+});
+
+
 /* ---------- EXPOR PARA HTML ---------- */
 
 Object.assign(window, {
@@ -186,5 +251,6 @@ Object.assign(window, {
     entrarSala,
     iniciarPartida,
     ocultarMensagem,
-    toggleMensagem
+    toggleMensagem,
+    sairSala
 });
