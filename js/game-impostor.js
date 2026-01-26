@@ -17,6 +17,7 @@ let roomCode = "";
 let isHost = false;
 let revealed = false;
 let playerId = crypto.randomUUID();
+let hideTimer = null;
 
 /* ---------- UTIL ---------- */
 
@@ -93,6 +94,9 @@ function entrarSalaUI() {
 /* ---------- JOGO ---------- */
 
 function iniciarPartida() {
+    clearInterval(hideTimer);
+    hideTimer = null;
+
     if (!window.palavras || window.palavras.length === 0) {
         alert("Nenhuma palavra carregada");
         return;
@@ -124,7 +128,7 @@ function iniciarPartida() {
 /* ---------- LISTENERS ---------- */
 
 function escutarSala() {
-        const roomRef = ref(db, `rooms/${roomCode}`);
+    const roomRef = ref(db, `rooms/${roomCode}`);
 
     onValue(roomRef, snapshot => {
 
@@ -172,18 +176,25 @@ function mostrarMensagem(texto) {
     box.textContent = texto;
     box.classList.remove("hidden");
     revealed = true;
-    setTimeout(ocultarMensagem, 10000);
+    hideTimer = setTimeout(ocultarMensagem, 5000);
 }
 
 function ocultarMensagem() {
+    clearInterval(hideTimer);
+    hideTimer = null;
     document.getElementById("impostorMensagem").classList.add("hidden");
     revealed = false;
 }
 
 function toggleMensagem() {
+    clearInterval(hideTimer);
+    hideTimer = null;
     const box = document.getElementById("impostorMensagem");
     revealed = !revealed;
     box.classList.toggle("hidden", !revealed);
+    if(revealed){
+        hideTimer = setTimeout(ocultarMensagem, 5000);
+    }
 }
 
 function sairSala() {
