@@ -50,31 +50,6 @@ Categorias atuais incluem, por exemplo:
 - CEP
 - Abstratos
 
-## 📁 Estrutura do projeto
-
-jogo-de-palavras
-│
-├── index.html # Estrutura principal do app
-│
-├── css/
-│ └── style.css # Estilos do app
-│
-├── js/
-│ └── app.js # Lógica dos jogos e da UI
-│
-├── words/ # Arquivos de palavras por categoria
-│ ├── palavras_objetos.txt
-│ ├── palavras_verbos.txt
-│ ├── palavras_filmes.txt
-│ └── ...
-│
-├── sounds/ # Sons do jogo
-│ ├── starting_gun.wav
-│ ├── beep.wav
-│ └── alarm.wav
-│
-└── LICENSE
-
 ## ➕ Adicionando novos jogos
 
 Este projeto foi pensado para crescer 🚀  
