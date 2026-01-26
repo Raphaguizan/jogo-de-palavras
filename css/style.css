@@ -1,0 +1,135 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    text-align: center;
+}
+
+.screen {
+    display: none;
+    padding: 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    margin-top: 40px;
+}
+
+button, select {
+    width: 90%;
+    padding: 15px;
+    margin: 10px auto;
+    font-size: 18px;
+    border-radius: 10px;
+    border: none;
+}
+
+button {
+    background: #00d26a;
+    color: #000;
+    font-weight: bold;
+}
+
+.back {
+    background: #555;
+    color: #fff;
+}
+
+.words {
+    text-align: left;
+    font-size: 22px;
+    margin: 20px auto 30px;
+    width: 90%;
+}
+
+.palavra {
+    font-size: 40px;
+    margin: 20px;
+}
+
+.hidden {
+    filter: blur(15px);
+}
+
+/* DROPDOWN */
+.dropdown {
+    margin-top: auto;
+    width: 100%;
+}
+
+.dropdown-btn {
+    background: #222;
+    color: #fff;
+    width: 100%;
+    border-radius: 0;
+    font-size: 16px;
+}
+
+.dropdown-content {
+    display: none;
+    background: #1a1a1a;
+    padding: 10px 0;
+}
+
+.dropdown.open .dropdown-content {
+    display: block;
+}
+
+.category {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.category input {
+    transform: scale(1.3);
+}
+
+.count {
+    opacity: 0.6;
+}
+
+.total {
+    padding: 12px 20px;
+    font-size: 14px;
+    opacity: 0.75;
+    border-top: 1px solid #333;
+    text-align: right;
+}
+
+/* OVERLAY */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+.overlay-timer {
+    font-size: 96px;
+    margin-bottom: 120px;
+}
+
+.overlay-timer.red {
+    color: red;
+}
+
+.overlay-buttons button {
+    width: 200px;
+    margin: 10px;
+}
