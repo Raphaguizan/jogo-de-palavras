@@ -145,9 +145,9 @@ function escutarSala() {
             if (!meuEstado) return;
 
             if (meuEstado.impostor) {
-                mostrarMensagem("🚨 VOCÊ É O IMPOSTOR");
+                mostrarMensagem("VOCÊ É O IMPOSTOR");
             } else {
-                mostrarMensagem("🎨 PALAVRA: " + data.palavra);
+                mostrarMensagem("PALAVRA: " + data.palavra);
             }
         }
     });
