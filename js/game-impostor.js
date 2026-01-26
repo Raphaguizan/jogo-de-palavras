@@ -1,128 +1,96 @@
-/*************************************************
- * JOGO DO IMPOSTOR — LÓGICA LOCAL (SEM FIREBASE)
- *************************************************/
+// game-impostor.js
 
-// ---------- ESTADO ----------
-let impostorState = {
-    role: null, // "host" | "player"
-    roomCode: null,
-    playerName: "",
-    isImpostor: false,
-    revealTimer: null
-};
+let playerName = "";
+let roomCode = "";
+let isHost = false;
+let revealed = false;
 
-// ---------- UTIL ----------
-function gerarCodigoSala() {
-    return Math.random().toString(36).substring(2, 6).toUpperCase();
+/* ---------- UTIL ---------- */
+
+function gerarNomeAleatorio() {
+    const nomes = ["Gato", "Cachorro", "Dragão", "Ninja", "Pirata", "Fantasma"];
+    return nomes[Math.floor(Math.random() * nomes.length)] + Math.floor(Math.random() * 100);
 }
 
-function nomeAleatorio() {
-    const nomes = ["Azul", "Verde", "Vermelho", "Roxo", "Amarelo", "Laranja"];
-    return "Jogador " + nomes[Math.floor(Math.random() * nomes.length)];
+/* ---------- TELA INICIAL ---------- */
+
+function initImpostor() {
+    const saved = localStorage.getItem("impostor_nome");
+    playerName = saved || gerarNomeAleatorio();
+
+    const input = document.getElementById("impostorNome");
+    if (input) input.value = playerName;
 }
 
-// ---------- INIT ----------
-(function initImpostor() {
-    const input = document.getElementById("impostorPlayerName");
-    if (!input) return;
-
-    const salvo = localStorage.getItem("impostorPlayerName");
-    input.value = salvo || nomeAleatorio();
-
-    input.addEventListener("input", () => {
-        localStorage.setItem("impostorPlayerName", input.value.trim());
-    });
-})();
-
-// ---------- TELA LOBBY ----------
-function impostorHost() {
-    impostorState.role = "host";
-    impostorState.playerName =
-        document.getElementById("impostorPlayerName").value.trim();
-
-    impostorState.roomCode = gerarCodigoSala();
-
-    go("impostor-game");
-    mostrarHost();
+function salvarNome() {
+    const input = document.getElementById("impostorNome");
+    playerName = input.value.trim() || gerarNomeAleatorio();
+    localStorage.setItem("impostor_nome", playerName);
 }
 
-function impostorJoin() {
-    impostorState.role = "player";
-    impostorState.playerName =
-        document.getElementById("impostorPlayerName").value.trim();
+function criarSala() {
+    salvarNome();
+    isHost = true;
+    roomCode = Math.random().toString(36).substring(2, 7).toUpperCase();
 
-    impostorState.roomCode =
-        document.getElementById("impostorRoomCode").value.trim().toUpperCase();
-
-    if (!impostorState.roomCode) {
-        alert("Digite o código da sala");
-        return;
-    }
-
-    go("impostor-game");
-    mostrarJogador();
+    document.getElementById("codigoSala").textContent = roomCode;
+    document.getElementById("hostArea").style.display = "block";
+    document.getElementById("playerArea").style.display = "none";
 }
 
-// ---------- UI ----------
-function mostrarHost() {
-    document.getElementById("impostorRoomCodeLabel").textContent =
-        impostorState.roomCode;
+function entrarSala() {
+    salvarNome();
+    isHost = false;
 
-    document.getElementById("impostor-host-panel").style.display = "block";
-    document.getElementById("impostor-waiting").style.display = "none";
-    document.getElementById("impostor-reveal").style.display = "none";
+    roomCode = document.getElementById("codigoInput").value.trim().toUpperCase();
+    if (!roomCode) return alert("Digite o código da sala");
 
-    // Mock de jogadores
-    atualizarListaJogadores([
-        impostorState.playerName,
-        "Jogador 2",
-        "Jogador 3"
-    ]);
+    document.getElementById("codigoSala").textContent = roomCode;
+    document.getElementById("hostArea").style.display = "none";
+    document.getElementById("playerArea").style.display = "block";
 }
 
-function mostrarJogador() {
-    document.getElementById("impostor-host-panel").style.display = "none";
-    document.getElementById("impostor-waiting").style.display = "block";
-    document.getElementById("impostor-reveal").style.display = "none";
+/* ---------- JOGO ---------- */
+
+function iniciarPartida() {
+    // placeholder: depois isso vem do Firebase
+    const isImpostor = Math.random() < 0.25;
+
+    const texto = isImpostor
+        ? "🚨 VOCÊ É O IMPOSTOR"
+        : "🎨 PALAVRA: EXEMPLO";
+
+    mostrarMensagem(texto);
 }
 
-function atualizarListaJogadores(lista) {
-    const ul = document.getElementById("impostorPlayersList");
-    ul.innerHTML = "";
-    lista.forEach(n => {
-        const li = document.createElement("li");
-        li.textContent = n;
-        ul.appendChild(li);
-    });
+function mostrarMensagem(texto) {
+    const box = document.getElementById("impostorMensagem");
+    box.textContent = texto;
+    box.classList.remove("hidden");
+
+    revealed = true;
+
+    setTimeout(() => ocultarMensagem(), 10000);
 }
 
-// ---------- JOGO ----------
-function impostorStartGame() {
-    // Sorteio local
-    const palavras = window.palavras || ["avião", "banana", "computador"];
-    const palavra = palavras[Math.floor(Math.random() * palavras.length)];
-
-    impostorState.isImpostor = Math.random() < 0.25;
-
-    revelarImpostor(
-        impostorState.isImpostor
-            ? "🚨 VOCÊ É O IMPOSTOR 🚨"
-            : `A palavra é:\n${palavra}`
-    );
+function ocultarMensagem() {
+    document.getElementById("impostorMensagem").classList.add("hidden");
+    revealed = false;
 }
 
-function revelarImpostor(texto) {
-    document.getElementById("impostor-waiting").style.display = "none";
-    document.getElementById("impostor-reveal").style.display = "block";
-
-    const reveal = document.getElementById("impostorRevealText");
-    reveal.textContent = texto;
-
-    clearTimeout(impostorState.revealTimer);
-    impostorState.revealTimer = setTimeout(impostorHide, 10000);
+function toggleMensagem() {
+    const box = document.getElementById("impostorMensagem");
+    revealed = !revealed;
+    box.classList.toggle("hidden", !revealed);
 }
 
-function impostorHide() {
-    document.getElementById("impostor-reveal").style.display = "none";
-    document.getElementById("impostor-waiting").style.display = "block";
-}
+/* ---------- EXPOR PARA O HTML ---------- */
+
+Object.assign(window, {
+    initImpostor,
+    criarSala,
+    entrarSala,
+    iniciarPartida,
+    ocultarMensagem,
+    toggleMensagem
+});

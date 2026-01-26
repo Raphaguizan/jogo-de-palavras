@@ -20,7 +20,7 @@ const categorias = {
     Adulto: "words/palavras_adulto.txt"
 };
 
-window.go = function (id) {
+function go(id) {
     // esconde todas as telas
     document.querySelectorAll(".screen").forEach(screen => {
         screen.classList.remove("active");
@@ -180,5 +180,14 @@ function stopTimer(){
 }
 
 carregarCategorias();
-import { db } from "./firebase.js";
-console.log("Firebase conectado:", db);
+
+Object.assign(window, {
+    go,
+    toggleDropdown,
+    sortearLista,
+    sortearPalavra,
+    toggleHide,
+    startTimer,
+    pauseTimer,
+    stopTimer
+});
