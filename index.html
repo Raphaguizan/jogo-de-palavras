@@ -82,7 +82,7 @@
         <input id="impostorPlayerName" type="text" placeholder="Digite seu nome">
     </label>
 
-    <button onclick="impostorHost()">🎩 Hostear jogo</button>
+    <button onclick="criarSala()">🎩 Hostear jogo</button>
     <button onclick="go('impostor-join')">🔍 Entrar em sala</button>
 
     <button class="back" onclick="go('menu')">⬅ Voltar</button>
@@ -100,7 +100,7 @@
         style="text-transform: uppercase"
     >
 
-    <button onclick="impostorJoin()">➡ Entrar</button>
+    <button onclick="entrarSala()">➡ Entrar</button>
     <button class="back" onclick="go('impostor-lobby')">⬅ Voltar</button>
 </div>
 
@@ -115,7 +115,7 @@
         <h3>Jogadores</h3>
         <ul id="impostorPlayersList"></ul>
 
-        <button onclick="impostorStartGame()">▶ Iniciar partida</button>
+        <button onclick="iniciarPartida()">▶ Iniciar partida</button>
     </div>
 
     <!-- JOGADOR - AGUARDANDO -->
@@ -126,7 +126,7 @@
     <!-- REVELAÇÃO -->
     <div id="impostor-reveal" style="display:none;">
         <p id="impostorRevealText" style="font-size:28px;"></p>
-        <button onclick="impostorHide()">🙈 Ocultar</button>
+        <button onclick="toggleMensagem()">🙈 Ocultar</button>
     </div>
 
 </div>
