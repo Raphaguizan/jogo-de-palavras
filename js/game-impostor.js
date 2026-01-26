@@ -1,9 +1,21 @@
 // game-impostor.js
+import { db } from "./firebase.js";
+import {
+    ref,
+    set,
+    get,
+    onValue,
+    update,
+    push
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+/* ---------- STATE ---------- */
 
 let playerName = "";
 let roomCode = "";
 let isHost = false;
 let revealed = false;
+let playerId = crypto.randomUUID();
 
 /* ---------- UTIL ---------- */
 
@@ -12,7 +24,7 @@ function gerarNomeAleatorio() {
     return nomes[Math.floor(Math.random() * nomes.length)] + Math.floor(Math.random() * 100);
 }
 
-/* ---------- TELA INICIAL ---------- */
+/* ---------- INIT ---------- */
 
 function initImpostor() {
     const saved = localStorage.getItem("impostor_nome");
@@ -21,6 +33,8 @@ function initImpostor() {
     const input = document.getElementById("impostorNome");
     if (input) input.value = playerName;
 }
+
+/* ---------- LOBBY ---------- */
 
 function salvarNome() {
     const input = document.getElementById("impostorNome");
@@ -33,9 +47,21 @@ function criarSala() {
     isHost = true;
     roomCode = Math.random().toString(36).substring(2, 7).toUpperCase();
 
-    document.getElementById("codigoSala").textContent = roomCode;
-    document.getElementById("hostArea").style.display = "block";
-    document.getElementById("playerArea").style.display = "none";
+    const roomRef = ref(db, `rooms/${roomCode}`);
+
+    set(roomRef, {
+        host: playerName,
+        started: false,
+        players: {
+            [playerId]: {
+                name: playerName,
+                impostor: false
+            }
+        }
+    });
+
+    entrarSalaUI();
+    escutarSala();
 }
 
 function entrarSala() {
@@ -45,32 +71,100 @@ function entrarSala() {
     roomCode = document.getElementById("codigoInput").value.trim().toUpperCase();
     if (!roomCode) return alert("Digite o código da sala");
 
+    const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
+
+    set(playerRef, {
+        name: playerName,
+        impostor: false
+    });
+
+    entrarSalaUI();
+    escutarSala();
+}
+
+function entrarSalaUI() {
     document.getElementById("codigoSala").textContent = roomCode;
-    document.getElementById("hostArea").style.display = "none";
-    document.getElementById("playerArea").style.display = "block";
+    document.getElementById("hostArea").style.display = isHost ? "block" : "none";
+    document.getElementById("playerArea").style.display = isHost ? "none" : "block";
+    go("impostor-game");
 }
 
 /* ---------- JOGO ---------- */
 
 function iniciarPartida() {
-    // placeholder: depois isso vem do Firebase
-    const isImpostor = Math.random() < 0.25;
+    if (!window.palavras || window.palavras.length === 0) {
+        alert("Nenhuma palavra carregada");
+        return;
+    }
 
-    const texto = isImpostor
-        ? "🚨 VOCÊ É O IMPOSTOR"
-        : "🎨 PALAVRA: EXEMPLO";
+    const palavra = window.palavras[
+        Math.floor(Math.random() * window.palavras.length)
+    ];
 
-    mostrarMensagem(texto);
+    const roomRef = ref(db, `rooms/${roomCode}`);
+
+    get(ref(db, `rooms/${roomCode}/players`)).then(snapshot => {
+        const players = Object.keys(snapshot.val());
+        const impostorId = players[Math.floor(Math.random() * players.length)];
+
+        const updates = {
+            palavra,
+            started: true
+        };
+
+        players.forEach(id => {
+            updates[`players/${id}/impostor`] = id === impostorId;
+        });
+
+        update(roomRef, updates);
+    });
+}
+
+/* ---------- LISTENERS ---------- */
+
+function escutarSala() {
+    const roomRef = ref(db, `rooms/${roomCode}`);
+
+    onValue(roomRef, snapshot => {
+        if (!snapshot.exists()) return;
+
+        const data = snapshot.val();
+
+        atualizarListaJogadores(data.players);
+
+        if (data.started) {
+            const meuEstado = data.players[playerId];
+            if (!meuEstado) return;
+
+            if (meuEstado.impostor) {
+                mostrarMensagem("🚨 VOCÊ É O IMPOSTOR");
+            } else {
+                mostrarMensagem("🎨 PALAVRA: " + data.palavra);
+            }
+        }
+    });
+}
+
+/* ---------- UI ---------- */
+
+function atualizarListaJogadores(players) {
+    const ul = document.getElementById("impostorPlayersList");
+    if (!ul) return;
+
+    ul.innerHTML = "";
+    Object.values(players).forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = p.name;
+        ul.appendChild(li);
+    });
 }
 
 function mostrarMensagem(texto) {
     const box = document.getElementById("impostorMensagem");
     box.textContent = texto;
     box.classList.remove("hidden");
-
     revealed = true;
-
-    setTimeout(() => ocultarMensagem(), 10000);
+    setTimeout(ocultarMensagem, 10000);
 }
 
 function ocultarMensagem() {
@@ -84,7 +178,7 @@ function toggleMensagem() {
     box.classList.toggle("hidden", !revealed);
 }
 
-/* ---------- EXPOR PARA O HTML ---------- */
+/* ---------- EXPOR PARA HTML ---------- */
 
 Object.assign(window, {
     initImpostor,
