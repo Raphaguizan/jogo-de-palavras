@@ -124,10 +124,17 @@ function iniciarPartida() {
 /* ---------- LISTENERS ---------- */
 
 function escutarSala() {
-    const roomRef = ref(db, `rooms/${roomCode}`);
+        const roomRef = ref(db, `rooms/${roomCode}`);
 
     onValue(roomRef, snapshot => {
-        if (!snapshot.exists()) return;
+
+        if (!snapshot.exists()) {
+            alert("A sala foi encerrada");
+            roomCode = "";
+            isHost = false;
+            go("impostor-lobby");
+            return;
+        }
 
         const data = snapshot.val();
 
@@ -206,35 +213,7 @@ function sairSala() {
     go("impostor-lobby");
 }
 
-function escutarSala() {
-    const roomRef = ref(db, `rooms/${roomCode}`);
 
-    onValue(roomRef, snapshot => {
-
-        if (!snapshot.exists()) {
-            alert("A sala foi encerrada");
-            roomCode = "";
-            isHost = false;
-            go("impostor-lobby");
-            return;
-        }
-
-        const data = snapshot.val();
-
-        atualizarListaJogadores(data.players);
-
-        if (data.started) {
-            const meuEstado = data.players[playerId];
-            if (!meuEstado) return;
-
-            if (meuEstado.impostor) {
-                mostrarMensagem("🚨 VOCÊ É O IMPOSTOR");
-            } else {
-                mostrarMensagem("🎨 PALAVRA: " + data.palavra);
-            }
-        }
-    });
-}
 window.addEventListener("beforeunload", () => {
     if (roomCode && !isHost) {
         const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
