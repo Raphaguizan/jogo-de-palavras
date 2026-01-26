@@ -20,6 +20,21 @@ const categorias = {
     Adulto: "words/palavras_adulto.txt"
 };
 
+function go(id) {
+    // esconde todas as telas
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
+
+    // mostra a tela desejada
+    const target = document.getElementById(id);
+    if (target) {
+        target.classList.add("active");
+    } else {
+        console.warn(`Tela com id "${id}" não encontrada`);
+    }
+}
+
 async function carregarCategorias(){
     const box = document.getElementById("categoriasBox");
     box.innerHTML = "";
