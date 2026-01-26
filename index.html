@@ -79,7 +79,7 @@
 
     <label>
         Seu nome:
-        <input id="impostorPlayerName" type="text" placeholder="Digite seu nome">
+        <input id="impostorNome" type="text" placeholder="Digite seu nome">
     </label>
 
     <button onclick="criarSala()">🎩 Hostear jogo</button>
@@ -93,7 +93,7 @@
     <h2>🔑 Entrar em Sala</h2>
 
     <input
-        id="impostorRoomCode"
+        id="codigoInput"
         type="text"
         placeholder="Código da sala"
         maxlength="6"
@@ -108,9 +108,9 @@
 <div class="screen" id="impostor-game">
 
     <!-- HOST -->
-    <div id="impostor-host-panel" style="display:none;">
+    <div id="hostArea" style="display:none;">
         <h2>🎩 Você é o Host</h2>
-        <p>Sala: <strong id="impostorRoomCodeLabel">----</strong></p>
+        <p>Sala: <strong id="codigoSala">----</strong></p>
 
         <h3>Jogadores</h3>
         <ul id="impostorPlayersList"></ul>
@@ -118,18 +118,20 @@
         <button onclick="iniciarPartida()">▶ Iniciar partida</button>
     </div>
 
-    <!-- JOGADOR - AGUARDANDO -->
-    <div id="impostor-waiting" style="display:none;">
+    <!-- JOGADOR -->
+    <div id="playerArea" style="display:none;">
         <p style="font-size:22px;">⏳ Aguardando rodada inicial...</p>
     </div>
 
     <!-- REVELAÇÃO -->
-    <div id="impostor-reveal" style="display:none;">
-        <p id="impostorRevealText" style="font-size:28px;"></p>
+    <div id="impostorMensagem" class="hidden" style="font-size:28px;">
+        <p id="impostorRevealText"></p>
         <button onclick="toggleMensagem()">🙈 Ocultar</button>
     </div>
 
 </div>
+
+
 
 <!-- SONS -->
 <audio id="startSound" src="sounds/starting_gun.wav"></audio>
