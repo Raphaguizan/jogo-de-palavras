@@ -1,4 +1,4 @@
-let palavras = [];
+window.palavras = [];
 let palavrasPorCategoria = {};
 let hideTimer = null;
 let closerTimer = null;
@@ -65,14 +65,13 @@ function salvarCategorias(){
 }
 
 function atualizarPalavras(){
-    palavras = [];
+    window.palavras = [];
     document.querySelectorAll("#categoriasBox input:checked").forEach(c =>
-        palavras.push(...palavrasPorCategoria[c.value])
+        window.palavras.push(...palavrasPorCategoria[c.value])
     );
-    palavras = [...new Set(palavras)];
-
+    window.palavras = [...new Set(window.palavras)];
     document.getElementById("totalPalavras").textContent =
-        `Total selecionado: ${palavras.length} palavras`;
+        `Total selecionado: ${window.palavras.length} palavras`;
 }
 
 /* UI */
@@ -90,14 +89,14 @@ function go(id){
 function sortearLista(){
     const qtd = +document.getElementById("qtd").value;
     document.getElementById("lista").innerHTML =
-        palavras.sort(()=>0.5-Math.random()).slice(0,qtd)
+        window.palavras.sort(()=>0.5-Math.random()).slice(0,qtd)
         .map((p,i)=>`${i+1}. ${p}`).join("<br>");
 }
 
 /* JOGO 2 */
 function sortearPalavra(){
     document.getElementById("palavra").textContent =
-        palavras[Math.floor(Math.random()*palavras.length)];
+        window.palavras[Math.floor(Math.random()*window.palavras.length)];
     toggleHide(false);
     hideTimer = setInterval(()=> toggleHide(true), 3000);
 }
@@ -173,6 +172,5 @@ Object.assign(window, {
     toggleHide,
     startTimer,
     pauseTimer,
-    stopTimer,
-    palavras
+    stopTimer
 });
