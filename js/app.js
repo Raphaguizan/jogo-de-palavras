@@ -20,7 +20,7 @@ const categorias = {
     Adulto: "words/palavras_adulto.txt"
 };
 
-function go(id) {
+window.go = function (id) {
     // esconde todas as telas
     document.querySelectorAll(".screen").forEach(screen => {
         screen.classList.remove("active");
