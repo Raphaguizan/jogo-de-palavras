@@ -1,4 +1,3 @@
-// game-impostor.js
 import { db } from "./firebase.js";
 import {
     ref,
@@ -7,7 +6,7 @@ import {
     get,
     onValue,
     update,
-    push
+    onDisconnect
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 /* ---------- STATE ---------- */
@@ -44,98 +43,135 @@ function salvarNome() {
     localStorage.setItem("impostor_nome", playerName);
 }
 
-function criarSala() {
+/* ---------- CRIAR SALA ---------- */
+
+async function criarSala() {
+
     salvarNome();
     isHost = true;
     roomCode = Math.random().toString(36).substring(2, 7).toUpperCase();
 
     const roomRef = ref(db, `rooms/${roomCode}`);
-
-    set(roomRef, {
-        host: playerName,
-        started: false,
-        players: {
-            [playerId]: {
-                name: playerName,
-                impostor: false
-            }
-        }
-    });
-
-    entrarSalaUI();
-    escutarSala();
-}
-
-function entrarSala() {
-    salvarNome();
-    isHost = false;
-
-    roomCode = document.getElementById("codigoInput").value.trim().toUpperCase();
-    if (!roomCode) return alert("Digite o código da sala");
-
     const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
 
-    set(playerRef, {
+    await set(roomRef, {
+        hostId: playerId,
+        hostName: playerName,
+        started: false,
+        palavra: "",
+        players: {}
+    });
+
+    await set(playerRef, {
         name: playerName,
         impostor: false
     });
 
+    // 🔥 REMOVE PLAYER se desconectar
+    onDisconnect(playerRef).remove();
+
+    // 🔥 REMOVE SALA se host cair
+    onDisconnect(roomRef).remove();
+
     entrarSalaUI();
-    escutarSala();
 }
 
+/* ---------- ENTRAR SALA ---------- */
+
+async function entrarSala() {
+
+    document.getElementById("roomError").textContent = "";
+    salvarNome();
+    isHost = false;
+
+    roomCode = document
+        .getElementById("codigoInput")
+        .value.trim()
+        .toUpperCase();
+
+    if (!roomCode) {
+        alert("Digite o código da sala");
+        return;
+    }
+
+    const roomRef = ref(db, `rooms/${roomCode}`);
+    const snapshot = await get(roomRef);
+
+    if (!snapshot.exists()) {
+        document.getElementById("roomError").textContent = "Sala não encontrada";
+        return;
+    }
+
+    const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
+
+    await set(playerRef, {
+        name: playerName,
+        impostor: false
+    });
+
+    // 🔥 Auto remove ao cair conexão
+    onDisconnect(playerRef).remove();
+
+    entrarSalaUI();
+}
+
+/* ---------- UI ENTRAR ---------- */
+
 function entrarSalaUI() {
+
     document.getElementById("codigoSala").textContent = roomCode;
     document.getElementById("hostArea").style.display = isHost ? "block" : "none";
     document.getElementById("playerArea").style.display = isHost ? "none" : "block";
+
+    escutarSala();
+
     go("impostor-game");
 }
 
-/* ---------- JOGO ---------- */
+/* ---------- INICIAR PARTIDA ---------- */
 
-function iniciarPartida() {
-    clearInterval(hideTimer);
-    hideTimer = null;
+async function iniciarPartida() {
 
     if (!window.palavras || window.palavras.length === 0) {
         alert("Nenhuma palavra carregada");
         return;
     }
 
-    const palavra = window.palavras[
-        Math.floor(Math.random() * window.palavras.length)
-    ];
+    const palavra =
+        window.palavras[Math.floor(Math.random() * window.palavras.length)];
 
-    const roomRef = ref(db, `rooms/${roomCode}`);
+    const playersSnap = await get(ref(db, `rooms/${roomCode}/players`));
 
-    get(ref(db, `rooms/${roomCode}/players`)).then(snapshot => {
-        const players = Object.keys(snapshot.val());
-        const impostorId = players[Math.floor(Math.random() * players.length)];
+    if (!playersSnap.exists()) return;
 
-        const updates = {
-            palavra,
-            started: true
-        };
+    const players = Object.keys(playersSnap.val());
 
-        players.forEach(id => {
-            updates[`players/${id}/impostor`] = id === impostorId;
-        });
+    const impostorId =
+        players[Math.floor(Math.random() * players.length)];
 
-        update(roomRef, updates);
+    const updates = {
+        started: true,
+        palavra
+    };
+
+    players.forEach(id => {
+        updates[`players/${id}/impostor`] = id === impostorId;
     });
+
+    await update(ref(db, `rooms/${roomCode}`), updates);
 }
 
-/* ---------- LISTENERS ---------- */
+/* ---------- LISTENER ---------- */
 
 function escutarSala() {
+
     const roomRef = ref(db, `rooms/${roomCode}`);
 
     onValue(roomRef, snapshot => {
 
         if (!snapshot.exists()) {
             alert("A sala foi encerrada");
-            roomCode = "";
-            isHost = false;
+            sairSalaLocal();
             go("impostor-lobby");
             return;
         }
@@ -144,11 +180,13 @@ function escutarSala() {
 
         atualizarListaJogadores(data.players);
 
+        // partida começou
         if (data.started) {
-            const meuEstado = data.players[playerId];
-            if (!meuEstado) return;
 
-            if (meuEstado.impostor) {
+            const me = data.players[playerId];
+            if (!me) return;
+
+            if (me.impostor) {
                 mostrarMensagem("VOCÊ É O IMPOSTOR");
             } else {
                 mostrarMensagem("PALAVRA: " + data.palavra);
@@ -160,10 +198,12 @@ function escutarSala() {
 /* ---------- UI ---------- */
 
 function atualizarListaJogadores(players) {
+
     const ul = document.getElementById("impostorPlayersList");
     if (!ul) return;
 
     ul.innerHTML = "";
+
     Object.values(players).forEach(p => {
         const li = document.createElement("li");
         li.textContent = p.name;
@@ -171,33 +211,52 @@ function atualizarListaJogadores(players) {
     });
 }
 
+/* ---------- MENSAGEM ---------- */
+
 function mostrarMensagem(texto) {
+
     const box = document.getElementById("impostorMensagem");
+
     box.textContent = texto;
     box.classList.remove("hidden");
+
     revealed = true;
-    hideTimer = setTimeout(ocultarMensagem, 5000);
+
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(ocultarMensagem, 10000);
 }
 
 function ocultarMensagem() {
-    clearInterval(hideTimer);
-    hideTimer = null;
-    document.getElementById("impostorMensagem").classList.add("hidden");
+
+    const box = document.getElementById("impostorMensagem");
+
+    box.classList.add("hidden");
     revealed = false;
 }
 
 function toggleMensagem() {
-    clearInterval(hideTimer);
-    hideTimer = null;
+
     const box = document.getElementById("impostorMensagem");
+
     revealed = !revealed;
     box.classList.toggle("hidden", !revealed);
-    if(revealed){
-        hideTimer = setTimeout(ocultarMensagem, 5000);
+
+    if (revealed) {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(ocultarMensagem, 10000);
     }
 }
 
-function sairSala() {
+/* ---------- SAIR ---------- */
+
+function sairSalaLocal() {
+    roomCode = "";
+    isHost = false;
+    revealed = false;
+}
+
+async function sairSala() {
+
     if (!roomCode) {
         go("menu");
         return;
@@ -207,40 +266,26 @@ function sairSala() {
     const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
 
     if (isHost) {
-        // HOST destrói a sala inteira
-        remove(roomRef);
-        alert("Sala encerrada pelo host");
+
+        await remove(roomRef); // destrói sala
+
     } else {
-        // Jogador apenas sai da sala
-        remove(playerRef);
+
+        await remove(playerRef); // sai apenas
     }
 
-    // Reset estado local
-    roomCode = "";
-    isHost = false;
-    revealed = false;
+    sairSalaLocal();
 
-    // Volta para o lobby do impostor
     go("impostor-lobby");
 }
 
-
-window.addEventListener("beforeunload", () => {
-    if (roomCode && !isHost) {
-        const playerRef = ref(db, `rooms/${roomCode}/players/${playerId}`);
-        remove(playerRef);
-    }
-});
-
-
-/* ---------- EXPOR PARA HTML ---------- */
+/* ---------- EXPOR ---------- */
 
 Object.assign(window, {
     initImpostor,
     criarSala,
     entrarSala,
     iniciarPartida,
-    ocultarMensagem,
     toggleMensagem,
     sairSala
 });
