@@ -116,6 +116,8 @@ function startTimer(){
     const total = +document.getElementById("tempo").value;
     const display = document.getElementById("overlayTimer");
     document.getElementById("timerOverlay").classList.add("active");
+    
+    display.classList.remove("red");
 
     let prep = 3;
     display.textContent = "EM\n" + prep;
