@@ -124,6 +124,7 @@ button {
 .overlay-timer {
     font-size: 96px;
     margin-bottom: 120px;
+    color: white;
 }
 
 .overlay-timer.red {
