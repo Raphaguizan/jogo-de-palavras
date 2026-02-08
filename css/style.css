@@ -130,6 +130,10 @@ button {
     color: red;
 }
 
+.overlay-timer.white {
+    color: white;
+}
+
 .overlay-buttons button {
     width: 200px;
     margin: 10px;
