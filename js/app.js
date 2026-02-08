@@ -150,6 +150,7 @@ function runTimer(){
         document.getElementById("alarm").play();
         navigator.vibrate?.([300,100,300]);
         closerTimer = setTimeout(stopTimer, 5000);
+        d.classList.remove("red");
     }
 }
 
